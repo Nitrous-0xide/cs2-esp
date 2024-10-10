@@ -7,7 +7,7 @@ import ctypes
 
 class Offsets:
     m_pBoneArray = 496
-    # You might want to add other offset variables as needed
+    #bone array no work :(
 
 class Colors:
     t_color = pm.get_color("orange")
