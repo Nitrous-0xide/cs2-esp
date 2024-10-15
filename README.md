@@ -22,3 +22,4 @@ First, clone the repository to your local machine using the following command:
 ```bash
 git clone https://github.com/Nitrous-0xide/simple-cs2-esp.git
 cd simple-cs2-esp
+python main.py
