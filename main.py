@@ -67,7 +67,7 @@ class CS2Esp:
         # Initialize offsets
         try:
             offsets_name = ["dwViewMatrix", "dwEntityList", "dwLocalPlayerController", "dwLocalPlayerPawn"]
-            offsets = requests.get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json").json()
+            offsets = requests.get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json").json() # Offsets automatically update.
             [setattr(Offsets, k, offsets["client.dll"][k]) for k in offsets_name]
 
             client_dll_name = {
@@ -84,8 +84,8 @@ class CS2Esp:
             clientDll = requests.get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.json").json()
             [setattr(Offsets, k, clientDll["client.dll"]["classes"][client_dll_name[k]]["fields"][k]) for k in client_dll_name]
         except requests.RequestException as e:
-            print(f"Error fetching offsets: {e}")
-            # Handle the error as needed
+            print(f"Error fetching offsets: {e}, If not working within 24 hours raise issue on the github page")
+            
 
     def it_entities(self):
         ent_list = pm.r_int64(self.proc, self.mod + Offsets.dwEntityList)
@@ -204,7 +204,7 @@ class App(tk.Tk):
         self.title("CS2 ESP Control")
         self.geometry("450x150")
 
-        self.emoji_label = tk.Label(self, text="👌\n nitros esp for cs2", font=("Helvetica", 36))
+        self.emoji_label = tk.Label(self, text="👌\n ESP", font=("Helvetica", 36))
         self.emoji_label.pack(pady=10)
         self.after(3000, self.expand_window)  
 
