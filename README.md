@@ -7,6 +7,7 @@ This project is a CS2 ESP (Extra Sensory Perception) tool designed to enhance ga
 - ESP for enemy players
 - Bounding box around players
 - Health and weapon information display
+- Always Up-To-Date offsets
 
 ## Requirements
 - Python 3.x
