@@ -13,7 +13,7 @@ class Colors:
     t_color = pm.get_color("orange")
     ct_color = pm.get_color("cyan")
     black = pm.get_color("black")
-    DP = pm.get_color("#4F2A66")  #Deep purple, used mainly for nametag esp
+    DP = pm.get_color("#4F2A66") 
     grey = pm.fade_color(pm.get_color("#242625"), 0.7)
 
 class Entity:
