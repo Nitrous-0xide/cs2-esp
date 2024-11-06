@@ -22,7 +22,7 @@ This project is a CS2 ESP (Extra Sensory Perception) tool designed to enhance ga
 ## Requirements
 - Python 3.x
 - Required libraries:
-  - `pymeow`
+  - [`pymeow`](https://github.com/qb-0/pyMeow)
  
 
 ## Installation
