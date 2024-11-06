@@ -9,6 +9,7 @@ This project is a CS2 ESP (Extra Sensory Perception) tool designed to enhance ga
 - Health and weapon information display
 - Always Up-To-Date offsets
 - Skulls drawn to player heads
+- Displays the distance to other players
 
 ## Troubleshooting
 - If the offsets are not working or returning an error then [create an issue](https://github.com/Nitrous-0xide/cs2-esp/issues).
