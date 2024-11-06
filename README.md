@@ -1,4 +1,4 @@
-i# CS2 ESP (Extra Sensory Perception)
+# CS2 ESP (Extra Sensory Perception)
 
 ## Overview
 This project is a CS2 ESP (Extra Sensory Perception) tool designed to enhance gameplay by providing players with visual aids to spot enemies and other game elements. 
