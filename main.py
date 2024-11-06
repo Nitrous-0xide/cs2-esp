@@ -39,7 +39,7 @@ class Entity:
     @property
     def pos(self):
         return pm.r_vec3(self.proc, self.pawn_ptr + Offsets.m_vOldOrigin)
-    
+
     @property
     def dormant(self):
         return pm.r_bool(self.proc, self.pawn_ptr + Offsets.m_bDormant)
@@ -48,7 +48,7 @@ class Entity:
         game_scene = pm.r_int64(self.proc, self.pawn_ptr + Offsets.m_pGameSceneNode)
         bone_array_ptr = pm.r_int64(self.proc, game_scene + Offsets.m_pBoneArray)
         return pm.r_vec3(self.proc, bone_array_ptr + bone * 32)
-    
+
     def wts(self, view_matrix):
         try:
             self.pos2d = pm.world_to_screen(view_matrix, self.pos, 1)
@@ -57,6 +57,11 @@ class Entity:
             print(f"Error converting world to screen: {e}")
             return False
         return True
+
+    @property 
+    def distance(self): 
+        local_pos = pm.r_vec3(self.proc, self.mod + Offsets.dwLocalPlayerPawn + Offsets.m_vOldOrigin) 
+        return pm.vec3_dist(self.pos, local_pos)
 
 class CS2Esp:
     def __init__(self):
@@ -85,7 +90,7 @@ class CS2Esp:
             [setattr(Offsets, k, clientDll["client.dll"]["classes"][client_dll_name[k]]["fields"][k]) for k in client_dll_name]
         except requests.RequestException as e:
             print(f"Error fetching offsets: {e}, If not working within 24 hours raise issue on the github page")
-            
+
 
     def it_entities(self):
         ent_list = pm.r_int64(self.proc, self.mod + Offsets.dwEntityList)
@@ -98,7 +103,7 @@ class CS2Esp:
 
                 if controller_ptr == local:
                     continue
-                
+
                 controller_pawn_ptr = pm.r_int64(self.proc, controller_ptr + Offsets.m_hPlayerPawn)
                 list_entry_ptr = pm.r_int64(self.proc, ent_list + 0x8 * ((controller_pawn_ptr & 0x7FFF) >> 9) + 16)
                 pawn_ptr = pm.r_int64(self.proc, list_entry_ptr + 120 * (controller_pawn_ptr & 0x1FF))
@@ -114,68 +119,95 @@ class CS2Esp:
 
         while pm.overlay_loop() and self.running:
             view_matrix = pm.r_floats(self.proc, self.mod + Offsets.dwViewMatrix, 16)
-        
+
             pm.begin_drawing()
             pm.draw_fps(0, 0)
 
             orange_count = 0
             cyan_count = 0
-        
+
             for ent in self.it_entities():
-                if ent.wts(view_matrix) and ent.health > 0 and not ent.dormant:
-                    color = Colors.ct_color if ent.team != 2 else Colors.t_color
-                    if ent.team != 2:
-                        cyan_count += 1
-                    else:
-                        orange_count += 1
+    if ent.wts(view_matrix) and ent.health > 0 and not ent.dormant:
+        color = Colors.ct_color if ent.team != 2 else Colors.t_color
+        if ent.team != 2:
+            cyan_count += 1
+        else:
+            orange_count += 1
 
-                    head = ent.pos2d["y"] - ent.head_pos2d["y"]
-                    width = head / 2
-                    center = width / 2
-                    
-                    # Snapline
-                    pm.draw_line(
-                        pm.get_screen_width() / 2,
-                        pm.get_screen_height() / 2,
-                        ent.head_pos2d["x"] - center,
-                        ent.head_pos2d["y"] - center / 2,
-                        Colors.black,
-                        3
-                    )
-                    pm.draw_line(
-                        pm.get_screen_width() / 2,
-                        pm.get_screen_height() / 2,
-                        ent.head_pos2d["x"] - center,
-                        ent.head_pos2d["y"] - center / 2,
-                        color,
-                    )
+        head = ent.pos2d["y"] - ent.head_pos2d["y"]
+        width = head / 2
+        center = width / 2
 
-                    # Box
-                    pm.draw_rectangle(
-                        ent.head_pos2d["x"] - center,
-                        ent.head_pos2d["y"] - center / 2,
-                        width,
-                        head + center / 2,
-                        Colors.grey,
-                    )
-                    pm.draw_rectangle_lines(
-                        ent.head_pos2d["x"] - center,
-                        ent.head_pos2d["y"] - center / 2,
-                        width,
-                        head + center / 2,
-                        color,
-                        1.2,
-                    )
+        # Snapline
+        pm.draw_line(
+            pm.get_screen_width() / 2,
+            pm.get_screen_height() / 2,
+            ent.head_pos2d["x"] - center,
+            ent.head_pos2d["y"] - center / 2,
+            Colors.black,
+            3
+        )
+        pm.draw_line(
+            pm.get_screen_width() / 2,
+            pm.get_screen_height() / 2,
+            ent.head_pos2d["x"] - center,
+            ent.head_pos2d["y"] - center / 2,
+            color,
+        )
 
-                    # Info
-                    txt = f"{ent.name} ({ent.health}%)"
-                    pm.draw_text(
-                        txt,
-                        ent.head_pos2d["x"] - pm.measure_text(txt, 15) // 2,
-                        ent.pos2d["y"],
-                        15,
-                        Colors.DP,
-                    )
+        # Box
+        pm.draw_rectangle(
+            ent.head_pos2d["x"] - center,
+            ent.head_pos2d["y"] - center / 2,
+            width,
+            head + center / 2,
+            Colors.grey,
+        )
+        pm.draw_rectangle_lines(
+            ent.head_pos2d["x"] - center,
+            ent.head_pos2d["y"] - center / 2,
+            width,
+            head + center / 2,
+            color,
+            1.2,
+        )
+
+        # Health Bar
+        health_bar_length = 50
+        health_percentage = ent.health / 100.0
+        pm.draw_rectangle(
+            ent.head_pos2d["x"] - center,
+            ent.head_pos2d["y"] - center / 2 - 10,
+            health_bar_length * health_percentage,
+            5,
+            Colors.green,
+        )
+        pm.draw_rectangle_lines(
+            ent.head_pos2d["x"] - center,
+            ent.head_pos2d["y"] - center / 2 - 10,
+            health_bar_length,
+            5,
+            Colors.black,
+        )
+
+        # Info
+        txt = f"{ent.name} ({ent.health}%) [{ent.distance:.1f}m]"
+        pm.draw_text(
+            txt,
+            ent.head_pos2d["x"] - pm.measure_text(txt, 15) // 2,
+            ent.pos2d["y"],
+            15,
+            Colors.DP,
+        )
+
+        # Skull at head position
+        pm.draw_text(
+            "💀",
+            ent.head_pos2d["x"] - 15,  # Adjust X position
+            ent.head_pos2d["y"] - 30,  # Adjust Y position above head
+            30,
+            Colors.red,
+        )
 
             # Display the counts on the overlay
             pm.draw_text(
@@ -193,6 +225,7 @@ class CS2Esp:
                 Colors.ct_color,
             )
 
+            t
             pm.end_drawing()
 
     def stop(self):
