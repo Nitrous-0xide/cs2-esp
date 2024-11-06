@@ -6,7 +6,7 @@ from threading import Thread
 import ctypes
 
 class Offsets:
-    m_pBoneArray = 496
+    m_pBoneArray = 69
     #bone array no work :(
 
 class Colors:
