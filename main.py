@@ -204,7 +204,7 @@ class App(tk.Tk):
         self.title("CS2 ESP Control")
         self.geometry("450x150")
 
-        self.emoji_label = tk.Label(self, text="👌\n nitros esp for cs2", font=("Helvetica", 36))
+        self.emoji_label = tk.Label(self, text="👌\n ESP", font=("Helvetica", 36))
         self.emoji_label.pack(pady=10)
         self.after(3000, self.expand_window)  
 
